@@ -43,7 +43,7 @@ func (f *DependencyFilter) Filter(config *cluster.ContainerConfig, nodes []*node
 	candidates := []*node.Node{}
 	for _, node := range nodes {
 		if f.check(volumes, node) &&
-			f.check(links, node) &&
+			//f.check(links, node) &&   Support the cross host linking
 			f.check(net, node) {
 			candidates = append(candidates, node)
 		}

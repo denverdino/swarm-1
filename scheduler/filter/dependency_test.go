@@ -78,8 +78,11 @@ func TestDependencyFilterSimple(t *testing.T) {
 	}}}
 	result, err = f.Filter(config, nodes)
 	assert.NoError(t, err)
-	assert.Len(t, result, 1)
-	assert.Equal(t, result[0], nodes[1])
+	// Support the cross-host linking
+	assert.Len(t, result, 3)
+	//assert.Len(t, result, 1)
+	//assert.Equal(t, result[0], nodes[1])
+	// End
 
 	// net.
 	config = &cluster.ContainerConfig{dockerclient.ContainerConfig{HostConfig: dockerclient.HostConfig{
@@ -226,5 +229,8 @@ func TestDependencyFilterChaining(t *testing.T) {
 		},
 	}}
 	result, err = f.Filter(config, nodes)
-	assert.Error(t, err)
+	// Support the cross-host linking
+	//assert.Error(t, err)
+	assert.Len(t, result, 1)
+	// End
 }

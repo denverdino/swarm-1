@@ -10,6 +10,8 @@ import (
 	"sync"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/docker/docker/links"
+	"github.com/docker/docker/nat"
 	"github.com/docker/docker/pkg/stringid"
 	"github.com/docker/docker/pkg/units"
 	"github.com/docker/swarm/cluster"
@@ -123,6 +125,10 @@ func (c *Cluster) createContainer(config *cluster.ContainerConfig, name string, 
 	if err != nil {
 		return nil, err
 	}
+
+	// Support cross-host linking
+	c.processLinks(n, config)
+	// End
 
 	if nn, ok := c.engines[n.ID]; ok {
 		container, err := nn.Create(config, name, true)
@@ -626,3 +632,87 @@ func (c *Cluster) BuildImage(buildImage *dockerclient.BuildImage, out io.Writer)
 	c.engines[n.ID].RefreshImages()
 	return nil
 }
+
+// Support cross-host linking
+func (c *Cluster) processLinks(containerNode *node.Node, config *cluster.ContainerConfig) error {
+
+	originalLinks := config.HostConfig.Links
+
+	if originalLinks == nil || len(originalLinks) == 0 {
+		return nil
+	}
+
+	containers := c.Containers()
+
+	//Cache for the container info in linking
+	cache := map[string](*dockerclient.ContainerInfo){}
+
+	addr := containerNode.Addr
+
+	var newLinks []string
+	var newEnv []string
+	var crossHostLinks []string
+
+	for _, link := range originalLinks {
+		//Parse the link info
+		linkInfo := strings.Split(link, ":")
+		name, alias := linkInfo[0], linkInfo[1]
+		linkContainerName := "/" + name
+		for _, target := range containers {
+			if target.Info.Name == linkContainerName {
+				if addr == target.Engine.Addr {
+					log.Debug("No additional work for the container link on the same host")
+				} else {
+					//Update the link
+					var err error
+					targetInfo := cache[target.Id]
+					if targetInfo == nil {
+						targetInfo, err = target.Engine.InspectContainer(target.Id)
+						if err != nil {
+							log.Warningf("Failed to find the linked container %s: %v", target.Id, err)
+							return err
+						}
+						cache[target.Id] = targetInfo
+					}
+
+					//Simulate link for container on other hosts
+					ports := make(nat.PortSet)
+					for p := range targetInfo.NetworkSettings.Ports {
+						ports[nat.Port(p)] = struct{}{}
+					}
+					linkName := fmt.Sprintf("/%s/%s", name, alias)
+					newLink, err := links.NewLink("", targetInfo.NetworkSettings.IPAddress, linkName, targetInfo.Config.Env, ports)
+
+					//Add as cross-host links
+					crossHostLinks = append(crossHostLinks, link)
+
+					//Ignore this link from the host config
+					link = ""
+
+					env := newLink.ToEnv()
+					newEnv = append(newEnv, env...)
+
+					newHost := alias + ":" + targetInfo.NetworkSettings.IPAddress
+					config.HostConfig.ExtraHosts = append(config.HostConfig.ExtraHosts, newHost)
+				}
+				break
+			}
+		}
+		if link != "" {
+			newLinks = append(newLinks, link)
+		}
+	}
+	//Update the Links
+	config.HostConfig.Links = newLinks
+	//Update the Env
+	config.Env = append(config.Env, newEnv...)
+
+	//Add the Env CROSS_HOST_LINKS
+	if crossHostLinks != nil {
+		envCrossHostLinks := "CROSS_HOST_LINKS=" + strings.Join(crossHostLinks, ";")
+		config.Env = append(config.Env, envCrossHostLinks)
+	}
+	return nil
+}
+
+// End
