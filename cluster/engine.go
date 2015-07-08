@@ -621,8 +621,11 @@ func (e *Engine) BuildImage(buildImage *dockerclient.BuildImage) (io.ReadCloser,
 	return e.client.BuildImage(buildImage)
 }
 
+// Support the cross-host linking
 // inspectContainer inspect a container
 func (e *Engine) InspectContainer(id string) (*dockerclient.ContainerInfo, error) {
 
 	return e.client.InspectContainer(id)
 }
+
+// End
