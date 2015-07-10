@@ -26,29 +26,39 @@
 			"Rev": "cc90c7b091275e606ad0ca7102a23fb2072f3f5e"
 		},
 		{
-			"ImportPath": "github.com/docker/docker/pkg/ioutils",
-			"Comment": "v1.4.1-3245-g443437f",
-			"Rev": "443437f5ea04da9d62bf3e05d7951f7d30e77d96"
+			"ImportPath": "github.com/docker/docker/links",
+			"Comment": "v1.4.1-4518-g6e64e05",
+			"Rev": "6e64e0548f30fd9d1a368ac5ea5bde9dec38c162"
 		},
 		{
-			"ImportPath": "github.com/docker/docker/pkg/parsers/filters",
-			"Comment": "v1.4.1-3245-g443437f",
-			"Rev": "443437f5ea04da9d62bf3e05d7951f7d30e77d96"
+			"ImportPath": "github.com/docker/docker/pkg/ioutils",
+			"Comment": "v1.4.1-4518-g6e64e05",
+			"Rev": "6e64e0548f30fd9d1a368ac5ea5bde9dec38c162"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/nat",
+			"Comment": "v1.4.1-4518-g6e64e05",
+			"Rev": "6e64e0548f30fd9d1a368ac5ea5bde9dec38c162"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/parsers",
+			"Comment": "v1.4.1-4518-g6e64e05",
+			"Rev": "6e64e0548f30fd9d1a368ac5ea5bde9dec38c162"
 		},
 		{
 			"ImportPath": "github.com/docker/docker/pkg/stringid",
-			"Comment": "v1.4.1-3245-g443437f",
-			"Rev": "443437f5ea04da9d62bf3e05d7951f7d30e77d96"
+			"Comment": "v1.4.1-4518-g6e64e05",
+			"Rev": "6e64e0548f30fd9d1a368ac5ea5bde9dec38c162"
 		},
 		{
 			"ImportPath": "github.com/docker/docker/pkg/units",
-			"Comment": "v1.4.1-3245-g443437f",
-			"Rev": "443437f5ea04da9d62bf3e05d7951f7d30e77d96"
+			"Comment": "v1.4.1-4518-g6e64e05",
+			"Rev": "6e64e0548f30fd9d1a368ac5ea5bde9dec38c162"
 		},
 		{
 			"ImportPath": "github.com/docker/docker/pkg/version",
-			"Comment": "v1.4.1-3245-g443437f",
-			"Rev": "443437f5ea04da9d62bf3e05d7951f7d30e77d96"
+			"Comment": "v1.4.1-4518-g6e64e05",
+			"Rev": "6e64e0548f30fd9d1a368ac5ea5bde9dec38c162"
 		},
 		{
 			"ImportPath": "github.com/docker/libkv",
