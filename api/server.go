@@ -98,7 +98,9 @@ func (s *Server) ListenAndServe() error {
 
 			switch protoAddrParts[0] {
 			case "unix":
-				l, err = newUnixListener(protoAddrParts[1], s.tlsConfig)
+				//l, err = newUnixListener(protoAddrParts[1], s.tlsConfig)
+				// Disable TLS for domain socket
+				l, err = newUnixListener(protoAddrParts[1], nil)
 			case "tcp":
 				l, err = newListener("tcp", protoAddrParts[1], s.tlsConfig)
 			default:
