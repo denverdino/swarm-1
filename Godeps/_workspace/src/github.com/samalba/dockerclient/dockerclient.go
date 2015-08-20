@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	APIVersion = "v1.15"
+	APIVersion = "v1.16"
 )
 
 var (
@@ -310,6 +310,26 @@ func (client *DockerClient) KillContainer(id, signal string) error {
 		return err
 	}
 	return nil
+}
+
+func (client *DockerClient) Wait(id string) <-chan WaitResult {
+	ch := make(chan WaitResult)
+	uri := fmt.Sprintf("/%s/containers/%s/wait", APIVersion, id)
+
+	go func() {
+		data, err := client.doRequest("POST", uri, nil, nil)
+		if err != nil {
+			ch <- WaitResult{ExitCode: -1, Error: err}
+			return
+		}
+
+		var result struct {
+			StatusCode int `json:"StatusCode"`
+		}
+		err = json.Unmarshal(data, &result)
+		ch <- WaitResult{ExitCode: result.StatusCode, Error: err}
+	}()
+	return ch
 }
 
 func (client *DockerClient) MonitorEvents(options *MonitorEventsOptions, stopChan <-chan struct{}) (<-chan EventOrError, error) {
@@ -691,4 +711,45 @@ func (client *DockerClient) BuildImage(image *BuildImage) (io.ReadCloser, error)
 
 	uri := fmt.Sprintf("/%s/build?%s", APIVersion, v.Encode())
 	return client.doStreamRequest("POST", uri, image.Context, headers)
+}
+
+func (client *DockerClient) GetExecRC(id string, timeout int) (int, error) {
+	//default timeout(when the parm is less than 0) in seconds will be 120.
+	if timeout <= 0 {
+		timeout = 120
+	}
+	rcChan := make(chan int)
+	errChan := make(chan error)
+	go func() {
+		uri := fmt.Sprintf("/exec/%s/json", id)
+		var err error = nil
+		var resp []byte = nil
+		running := true
+		var execInspectResp struct {
+			Running  bool
+			ExitCode int
+		}
+		for running {
+			resp, err = client.doRequest("GET", uri, nil, nil)
+			if err != nil {
+				errChan <- err
+			}
+			if err = json.Unmarshal(resp, &execInspectResp); err != nil {
+				errChan <- err
+			}
+			running = execInspectResp.Running
+			if running {
+				time.Sleep(1 * time.Second)
+			}
+		}
+		rcChan <- execInspectResp.ExitCode
+	}()
+	select {
+	case rc := <-rcChan:
+		return rc, nil
+	case err := <-errChan:
+		return -255, err
+	case <-time.After(time.Duration(timeout) * time.Second):
+		return -255, fmt.Errorf("Failed to get exit code after %d seconds.", timeout)
+	}
 }

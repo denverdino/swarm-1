@@ -174,6 +174,7 @@ func (s *State) StateString() string {
 			return "restarting"
 		}
 		return "running"
+
 	}
 
 	if s.Dead {
@@ -181,6 +182,13 @@ func (s *State) StateString() string {
 	}
 
 	return "exited"
+}
+
+type NodeInfo struct {
+	Name string
+	Id   string
+	Addr string
+	Ip   string
 }
 
 type ImageInfo struct {
@@ -217,9 +225,12 @@ type ContainerInfo struct {
 		Ports       map[string][]PortBinding
 	}
 	SysInitPath    string
+	HostnamePath   string
+	HostsPath      string
 	ResolvConfPath string
 	Volumes        map[string]string
 	HostConfig     *HostConfig
+	Node           *NodeInfo
 }
 
 type ContainerChanges struct {
@@ -322,6 +333,11 @@ type ImageDelete struct {
 type EventOrError struct {
 	Event
 	Error error
+}
+
+type WaitResult struct {
+	ExitCode int
+	Error    error
 }
 
 type decodingResult struct {

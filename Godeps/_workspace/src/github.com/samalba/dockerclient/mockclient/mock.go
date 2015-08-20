@@ -70,6 +70,11 @@ func (client *MockClient) KillContainer(id, signal string) error {
 	return args.Error(0)
 }
 
+func (client *MockClient) Wait(id string) <-chan dockerclient.WaitResult {
+	args := client.Mock.Called(id)
+	return args.Get(0).(<-chan dockerclient.WaitResult)
+}
+
 func (client *MockClient) MonitorEvents(options *dockerclient.MonitorEventsOptions, stopChan <-chan struct{}) (<-chan dockerclient.EventOrError, error) {
 	args := client.Mock.Called(options, stopChan)
 	return args.Get(0).(<-chan dockerclient.EventOrError), args.Error(1)
@@ -154,4 +159,9 @@ func (client *MockClient) ImportImage(source string, repository string, tag stri
 func (client *MockClient) BuildImage(image *dockerclient.BuildImage) (io.ReadCloser, error) {
 	args := client.Mock.Called(image)
 	return args.Get(0).(io.ReadCloser), args.Error(1)
+}
+
+func (client *MockClient) GetExecRC(id string, timeout int) (int, error) {
+	args := client.Mock.Called(id, timeout)
+	return args.Int(0), args.Error(1)
 }

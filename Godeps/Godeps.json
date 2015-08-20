@@ -6,11 +6,6 @@
 	],
 	"Deps": [
 		{
-			"ImportPath": "code.google.com/p/go-uuid/uuid",
-			"Comment": "null-15",
-			"Rev": "35bc42037350f0078e3c974c6ea690f1926603ab"
-		},
-		{
 			"ImportPath": "github.com/Sirupsen/logrus",
 			"Comment": "v0.6.4-6-g539d4dc",
 			"Rev": "539d4dc034c079a7188b5d4ca9650632d73c66e8"
@@ -114,8 +109,12 @@
 			"Rev": "83b52d7f648d2a2fa91330123d348d4090be2aed"
 		},
 		{
+			"ImportPath": "github.com/pborman/uuid",
+			"Rev": "ca53cad383cad2479bbba7f7a1a05797ec1386e4"
+		},
+		{
 			"ImportPath": "github.com/samalba/dockerclient",
-			"Rev": "68832c185bb6304fed26a986891fd27b6ed17987"
+			"Rev": "e2c35870a0f0ae60a470650126b92e8f185e233c"
 		},
 		{
 			"ImportPath": "github.com/samuel/go-zookeeper/zk",
@@ -132,6 +131,10 @@
 		{
 			"ImportPath": "github.com/stretchr/testify/mock",
 			"Rev": "dab07ac62d4905d3e48d17dc549c684ac3b7c15a"
+		},
+		{
+			"ImportPath": "github.com/ugorji/go/codec",
+			"Rev": "5abd4e96a45c386928ed2ca2a7ef63e2533e18ec"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
