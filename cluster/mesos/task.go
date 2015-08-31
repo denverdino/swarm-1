@@ -117,12 +117,17 @@ func (t *task) build(slaveID string, offers map[string]*mesosproto.Offer) {
 		t.Resources = append(t.Resources, mesosutil.NewScalarResource("mem", float64(mem/1024/1024)))
 	}
 
-	if len(t.config.Cmd) > 0 && t.config.Cmd[0] != "" {
-		t.Command.Value = &t.config.Cmd[0]
-	}
+	//
+	cmd := t.config.Cmd
+	if cmd != nil {
 
-	if len(t.config.Cmd) > 1 {
-		t.Command.Arguments = t.config.Cmd[1:]
+		if cmd.Len() > 0 && cmd.Slice()[0] != "" {
+			t.Command.Value = &cmd.Slice()[0]
+		}
+
+		if cmd.Len() > 1 {
+			t.Command.Arguments = cmd.Slice()[1:]
+		}
 	}
 
 	for key, value := range t.config.Labels {

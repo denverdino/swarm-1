@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/samalba/dockerclient"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/samalba/dockerclient"
 )
 
 func statCallback(id string, stat *dockerclient.Stats, ec chan error, args ...interface{}) {
@@ -26,7 +27,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	containerConfig := &dockerclient.ContainerConfig{Image: "busybox", Cmd: []string{"sh"}}
+	containerConfig := &dockerclient.ContainerConfig{Image: "busybox", Cmd: dockerclient.NewCommand("sh")}
 	containerId, err := docker.CreateContainer(containerConfig, "")
 	if err != nil {
 		log.Fatal(err)

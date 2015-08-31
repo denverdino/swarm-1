@@ -20,12 +20,12 @@ type ContainerConfig struct {
 	OpenStdin       bool
 	StdinOnce       bool
 	Env             []string
-	Cmd             []string
+	Cmd             *Command
 	Image           string
 	Volumes         map[string]struct{}
 	VolumeDriver    string
 	WorkingDir      string
-	Entrypoint      []string
+	Entrypoint      *Entrypoint
 	NetworkDisabled bool
 	MacAddress      string
 	OnBuild         []string
